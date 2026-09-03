@@ -13,6 +13,20 @@ mod handler;
 mod request;
 mod response;
 
+
+// Request line
+// GET                          // HTTP method
+// /index.html                  // Request target
+// HTTP/1.1                     // HTTP version
+// \r\n                         // CRLF that marks the end of the request line
+//
+// // Headers
+// Host: localhost:4221\r\n     // Header that specifies the server's host and port
+// User-Agent: curl/7.64.1\r\n  // Header that describes the client's user agent
+// Accept: */*\r\n              // Header that specifies which media types the client can accept
+// \r\n                         // CRLF that marks the end of the headers
+
+// Request body (empty)
 //TODO make a test script using curl localhost:4221/abcsad
 fn main() {
     //println!("hello");

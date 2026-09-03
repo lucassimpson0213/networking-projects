@@ -8,26 +8,44 @@ use crate::request::parse_request_target;
 use std::io::Read;
 use std::io::Write;
 use std::net::TcpStream;
+// Request line
+// GET                          // HTTP method
+// /index.html                  // Request target
+// HTTP/1.1                     // HTTP version
+// \r\n                         // CRLF that marks the end of the request line
+//
+// // Headers
+// Host: localhost:4221\r\n     // Header that specifies the server's host and port
+// User-Agent: curl/7.64.1\r\n  // Header that describes the client's user agent
+// Accept: */*\r\n              // Header that specifies which media types the client can accept
+// \r\n                         // CRLF that marks the end of the headers
 
 mod handler {
     use std::io::Read;
     use std::net::TcpStream;
+    use crate::request::parse_request_target;
 
     use crate::errors::ClientError;
+    // why doesn't the request object own the stream and derive all the extra info like request line
+    // and stuff like that
     struct Request<'a> {
-        amtbytes: usize,
-        buffer: Vec<u8>,
+        method: &'a str , 
         request_target: &'a str,
+        headers: &'a str,
+        buffer: Vec<u8>,
     }
 
     impl Request<'_> {
-        pub fn from_stream(&mut self, stream: TcpStream) -> Result<(), ClientError> {
+        pub fn new(&self, stream: TcpStream) -> Self {
             let mut owned_stream = stream;
-            self.buffer = Vec::new();
+            let buffer = Vec::new();
 
-            let req = Request{}
+            
 
-            self.amtbytes = owned_stream.read_to_end(&mut self.buffer)?;
+            let amtbytes = owned_stream.read_to_end(&mut self.buffer)?;
+            let target = parse_request_target(&buffer);
+
+            return Self{method: "GET", amtbytes: amtbytes.clone(), buffer: buffer, request_target: target, headers: '' };
             Ok(())
         }
     }
