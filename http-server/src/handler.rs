@@ -38,15 +38,27 @@ mod handler {
     impl Request<'_> {
         pub fn new(&self, stream: TcpStream) -> Self {
             let mut owned_stream = stream;
-            let buffer = Vec::new();
+            let mut  buffer = Vec::new();
 
             
 
-            let amtbytes = owned_stream.read_to_end(&mut self.buffer)?;
+            let _amtbytes = owned_stream.read_to_end(&mut buffer);
+            // possibly move parse request target to request object
             let target = parse_request_target(&buffer);
 
-            return Self{method: "GET", buffer: buffer, request_target: target, headers: "" };
+            return Self{method: "GET", buffer: buffer, request_target: target.unwrap(), headers: "" };
         }
+        // I think it makes a lot of sense to put these methods in here as they pertain to
+        // information about the request
+        fn parse_request_target() {
+
+        }
+
+        fn parse_content_len_and_string() {
+
+        }
+
+        
     }
 
     struct Response {}
