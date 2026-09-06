@@ -1,6 +1,9 @@
 use crate::errors::ClientError;
 use crate::errors::RequestLineError;
+use std::string::FromUtf8Error;
 use std::str::Utf8Error;
+
+
 pub fn is_get_request(buf: &[u8]) -> Result<bool, Utf8Error> {
     let request_str = str::from_utf8(buf)?;
 
@@ -14,7 +17,7 @@ pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
     println!("{:?}", request_line);
     (1_usize, "hello")
 }
-pub fn parse_request_target(buf: &[u8]) -> Result<Vec<u8>, Utf8Error> {
+pub fn parse_request_target(buf: &[u8]) -> Result<&String, ClientError> {
     let request_str = str::from_utf8(buf)?;
     let index_of_start_req = str::find(request_str, "/");
 
@@ -31,8 +34,8 @@ pub fn parse_request_target(buf: &[u8]) -> Result<Vec<u8>, Utf8Error> {
             }
         }
     }
-
-    Ok(request_line.clone())
+    let str: String =  String::from_utf8(request_line)?;
+    Ok(&str)
 }
 
 pub fn parse_content_len_and_string(target: &[u8]) -> Result<(usize, &str), ClientError> {

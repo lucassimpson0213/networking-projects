@@ -45,8 +45,7 @@ mod handler {
             let amtbytes = owned_stream.read_to_end(&mut self.buffer)?;
             let target = parse_request_target(&buffer);
 
-            return Self{method: "GET", amtbytes: amtbytes.clone(), buffer: buffer, request_target: target, headers: '' };
-            Ok(())
+            return Self{method: "GET", buffer: buffer, request_target: target, headers: "" };
         }
     }
 
