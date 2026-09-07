@@ -4,15 +4,6 @@ use std::string::FromUtf8Error;
 use std::str::Utf8Error;
 
 
-pub fn is_get_request(buf: &[u8]) -> Result<bool, Utf8Error> {
-    let request_str = str::from_utf8(buf)?;
-
-    if request_str.contains("GET") {
-        Ok(true)
-    } else {
-        Ok(false)
-    }
-}
 pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
     println!("{:?}", request_line);
     (1_usize, "hello")
