@@ -1,5 +1,5 @@
-   0.014681513s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint: fingerprint error for http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server)/Check { test: false }/TargetInner { name: "http-server", doc: true, ..: with_path("/home/lucassimpson/dev/networking-projects/http-server/src/main.rs", Edition2024) }
-   0.014697133s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/lucassimpson/dev/networking-projects/http-server/target/debug/.fingerprint/http-server-2f4ee7656324aa3b/bin-http-server`
+   0.082829547s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint: fingerprint error for http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server)/Check { test: false }/TargetInner { name: "http-server", doc: true, ..: with_path("/home/lucassimpson/dev/networking-projects/http-server/src/main.rs", Edition2024) }
+   0.082856351s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/lucassimpson/dev/networking-projects/http-server/target/debug/.fingerprint/http-server-2f4ee7656324aa3b/bin-http-server`
 
 Caused by:
     No such file or directory (os error 2)
@@ -40,8 +40,8 @@ Stack backtrace:
   23: __libc_start_call_main
   24: __libc_start_main@@GLIBC_2.34
   25: <unknown>
-   0.033665605s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint: fingerprint error for http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server)/Check { test: true }/TargetInner { name: "http-server", doc: true, ..: with_path("/home/lucassimpson/dev/networking-projects/http-server/src/main.rs", Edition2024) }
-   0.033678589s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/lucassimpson/dev/networking-projects/http-server/target/debug/.fingerprint/http-server-831fa59e33b13aec/test-bin-http-server`
+   0.101718256s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint: fingerprint error for http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server)/Check { test: true }/TargetInner { name: "http-server", doc: true, ..: with_path("/home/lucassimpson/dev/networking-projects/http-server/src/main.rs", Edition2024) }
+   0.101750070s  INFO prepare_target{force=false package_id=http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server) target="http-server"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/lucassimpson/dev/networking-projects/http-server/target/debug/.fingerprint/http-server-831fa59e33b13aec/test-bin-http-server`
 
 Caused by:
     No such file or directory (os error 2)
@@ -83,6 +83,6 @@ Stack backtrace:
   24: __libc_start_main@@GLIBC_2.34
   25: <unknown>
     Checking http-server v0.1.0 (/home/lucassimpson/dev/networking-projects/http-server)
-error: could not compile `http-server` (bin "http-server") due to 7 previous errors; 2 warnings emitted
+error: could not compile `http-server` (bin "http-server") due to 6 previous errors; 4 warnings emitted
 warning: build failed, waiting for other jobs to finish...
-error: could not compile `http-server` (bin "http-server" test) due to 9 previous errors; 3 warnings emitted
+error: could not compile `http-server` (bin "http-server" test) due to 8 previous errors; 5 warnings emitted
