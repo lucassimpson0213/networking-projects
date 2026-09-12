@@ -5,7 +5,7 @@
 #![deny(clippy::unimplemented)]
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
-use crate::handler::handle_client;
+use crate::handler::Handler;
 use core::str::Utf8Error;
 use std::net::TcpListener;
 mod errors;

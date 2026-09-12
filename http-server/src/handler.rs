@@ -21,21 +21,28 @@ use std::net::TcpStream;
 // \r\n                         // CRLF that marks the end of the headers
 
 
-struct Handler {
-    stream: TcpStream
+pub struct Handler<'conn> {
+    stream: &'conn TcpStream
 }
 
 
-impl Handler {
+
+ impl <'conn> Handler <'conn>{
+    pub fn new(&mut self, stream:  &'conn TcpStream) {
+        //possibly provide some metadata from TcpStream
+        self.stream = stream;
+         
+    }
     pub fn handle_client(self) -> Result<(), ClientError> {
         let mut owned_stream = self.stream;
         
         
         let req = Request::new(owned_stream)?;
-        let request_target = 
-
-        let (len, str) = parse_content_len_and_string()?;
-        let (len, header) = parse_headers(&buf);
+        let request_target = req.request_target;
+        let headers = req.headers;
+        let (len, str) = req.parse_content_len_and_string();
+        
+        // let (len, header) = parse_headers(&buf);
 
         let response200 = "HTTP/1.1 200 OK\r\n\r\n";
         let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
@@ -84,7 +91,11 @@ impl Request {
     // I think it makes a lot of sense to put these methods in here as they pertain to
     // information about the request
 
-    fn parse_content_len_and_string() {}
+    pub fn parse_content_len_and_string() -> (i8, String) {}
+
+    pub fn headers() {
+
+    }
 
 
 }
