@@ -37,10 +37,10 @@ pub struct Handler<'conn> {
         let mut owned_stream = self.stream;
         
         
-        let req = Request::new(owned_stream)?;
+        let req = Request::new(&owned_stream)?;
         let request_target = req.request_target;
         let headers = req.headers;
-        let (len, str) = req.parse_content_len_and_string();
+        let (len, str) = Request::parse_content_len_and_string();
         
         // let (len, header) = parse_headers(&buf);
 
@@ -77,7 +77,7 @@ struct Request {
 }
 
 impl Request {
-    pub fn new(stream: TcpStream) -> Result<Request, ClientError> {
+    pub fn new(stream: &TcpStream) -> Result<Request, ClientError> {
         let mut owned_stream = stream;
         let mut buffer = Vec::new();
 
