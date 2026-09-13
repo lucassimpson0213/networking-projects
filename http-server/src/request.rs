@@ -8,7 +8,7 @@ pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
     println!("{:?}", request_line);
     (1_usize, "hello")
 }
-pub fn parse_request_target(buf: &[u8]) -> Result<&String, ClientError> {
+pub fn parse_request_target(buf: &[u8]) -> Result<String, ClientError> {
     let request_str = str::from_utf8(buf)?;
     let index_of_start_req = str::find(request_str, "/");
 
@@ -29,7 +29,7 @@ pub fn parse_request_target(buf: &[u8]) -> Result<&String, ClientError> {
     Ok(&str)
 }
 
-pub fn parse_content_len_and_string(target: &[u8]) -> Result<(usize, &str), ClientError> {
+pub fn parse_content_len_and_string(target: &[u8]) -> Result<(usize, String), ClientError> {
     let slash = target.iter().position(|&b| b == b'/');
 
     let Some(slash_idx) = slash else {
@@ -46,5 +46,5 @@ pub fn parse_content_len_and_string(target: &[u8]) -> Result<(usize, &str), Clie
     };
     println!("{}", second_slash_idx);
     let byte_slice = &target[second_slash_idx + slash_idx + 2..];
-    Ok((byte_slice.len(), str::from_utf8(byte_slice)?))
+    Ok((byte_slice.len(), String::from_utf8(byte_slice.to_vec())?))
 }

@@ -40,7 +40,7 @@ pub struct Handler<'conn> {
         let req = Request::new(&owned_stream)?;
         let request_target = req.request_target;
         let headers = req.headers;
-        let (len, str) = Request::parse_content_len_and_string();
+        let (len, body) = (req.body_len, req.body);
         
         // let (len, header) = parse_headers(&buf);
 
@@ -48,14 +48,15 @@ pub struct Handler<'conn> {
         let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
         let response_echo = format!(
             "HTTP/1.1 200 Ok\r\nContent-Type: text/plain\r\nContent-Length: {:?}\r\n\r{:?}",
-            len, str
+            len, body
         );
-
-        if str::from_utf8(&target.clone())? == "/" {
+        // it would be nice to match on a route pattern and then act on that and write a repsponse
+        // from response writer
+        if request_target == "/" {
             owned_stream.write_all(response200.as_bytes())?;
-        } else if str::from_utf8(&target)?.starts_with("/echo/") {
+        } else if request_target.starts_with("/echo/") {
             let _response = owned_stream.write_all(&response_echo.into_bytes());
-        } else if str::from_utf8(&target)?.starts_with("/user-agent") {
+        } else if request_target.starts_with("/user-agent") {
         } else {
             owned_stream.write_all(response404.as_bytes())?;
         }
@@ -72,6 +73,8 @@ pub struct Handler<'conn> {
 struct Request {
     method: String,
     request_target: String,
+    body: String,
+    body_len: usize,  
     headers: String,
     buffer: String,
 }
@@ -85,13 +88,14 @@ impl Request {
         let buffer_as_utf8 = String::from_utf8(buffer.clone())?;
         // possibly move parse request target to request object
         let request_target = parse_request_target(&buffer)?.clone();
+        let (len, body) = parse_content_len_and_string(&buffer)?;
 
-        return Ok(Request { method: String::new(), request_target, headers: String::new(), buffer:buffer_as_utf8 })
+        return Ok(Request { method: String::new(),body: body, body_len: len, request_target, headers: String::new(), buffer:buffer_as_utf8 })
     }
     // I think it makes a lot of sense to put these methods in here as they pertain to
     // information about the request
 
-    pub fn parse_content_len_and_string() -> (i8, String) {}
+    
 
     pub fn headers() {
 
@@ -99,4 +103,4 @@ impl Request {
 
 
 }
-struct Response {}
+struct ResponseWriter {}
