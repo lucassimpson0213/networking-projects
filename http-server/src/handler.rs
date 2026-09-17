@@ -1,8 +1,6 @@
-use crate::TcpListener;
-use crate::errors::BufferError;
+use std::collections::HashMap;
 use crate::errors::ClientError;
 use crate::request::parse_content_len_and_string;
-use crate::request::parse_headers;
 use crate::request::parse_request_target;
 use std::io::Read;
 use std::io::Write;
@@ -103,4 +101,13 @@ impl Request {
 
 
 }
-struct ResponseWriter {}
+struct Response {
+    
+}
+
+
+
+type HandlerFunc = fn(&Request) -> Response;
+struct ResponseWriter {
+    responses: HashMap<String, HandlerFunc>
+}
