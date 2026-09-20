@@ -31,7 +31,13 @@ mod response;
 fn main() {
     //println!("hello");
 
-    let _ = bind_port();
+    // let _ = bind_port();
+    let app = App::new()
+
+    app.get("/");
+    app.get("/echo/hello");
+    app.get("/user-agent")
+
 }
 
 fn bind_port() -> Result<(), std::io::Error> {

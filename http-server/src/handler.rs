@@ -20,7 +20,8 @@ use std::net::TcpStream;
 
 
 pub struct Handler<'conn> {
-    stream: &'conn TcpStream
+    stream: &'conn TcpStream,
+    route_map:  HashMap<String, HashMap<String, HandlerFunc>>
 }
 
 
@@ -31,6 +32,9 @@ pub struct Handler<'conn> {
         self.stream = stream;
          
     }
+    fn get(path: Route, handler: HandlerFunc) {
+        todo!();
+    }
     pub fn handle_client(self) -> Result<(), ClientError> {
         let mut owned_stream = self.stream;
         
@@ -40,8 +44,7 @@ pub struct Handler<'conn> {
         let headers = req.headers;
         let (len, body) = (req.body_len, req.body);
         
-        // let (len, header) = parse_headers(&buf);
-
+        // let (len, header) = parse_headers(&buf); 
         let response200 = "HTTP/1.1 200 OK\r\n\r\n";
         let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
         let response_echo = format!(
@@ -50,6 +53,13 @@ pub struct Handler<'conn> {
         );
         // it would be nice to match on a route pattern and then act on that and write a repsponse
         // from response writer
+        
+        let responses: HashMap<String, HashMap<String, HandlerFunc>> = HashMap::new();
+
+
+
+        
+
         if request_target == "/" {
             owned_stream.write_all(response200.as_bytes())?;
         } else if request_target.starts_with("/echo/") {
@@ -108,6 +118,9 @@ struct Response {
 
 
 type HandlerFunc = fn(&Request) -> Response;
+
 struct ResponseWriter {
-    responses: HashMap<String, HandlerFunc>
+
+
+
 }
