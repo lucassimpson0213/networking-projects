@@ -32,11 +32,12 @@ fn main() {
     //println!("hello");
 
     // let _ = bind_port();
-    let app = App::new()
+    // let app = App::new()
 
-    app.get("/");
-    app.get("/echo/hello");
-    app.get("/user-agent")
+    // app.get("/");
+    // app.get("/echo/hello");
+    // app.get("/user-agent")
+    let _ = bind_port();
 
 }
 
@@ -44,6 +45,7 @@ fn bind_port() -> Result<(), std::io::Error> {
     let listener = TcpListener::bind("127.0.0.1:4221")?;
 
     for stream in listener.incoming() {
+        let stream_handler = handler::Handler::new()
         let _ = handle_client(stream?, &listener);
     }
 

@@ -21,19 +21,21 @@ use std::net::TcpStream;
 
 pub struct Handler<'conn> {
     stream: &'conn TcpStream,
+    router: Router
+}
+
+//  we gotta dispatch behavior so you can register a function and then dispath it 
+pub struct Router{ 
     route_map:  HashMap<String, HashMap<String, HandlerFunc>>
+    
 }
 
 
-
  impl <'conn> Handler <'conn>{
-    pub fn new(&mut self, stream:  &'conn TcpStream) {
+    pub fn new(stream:  &'conn TcpStream) -> Self {
         //possibly provide some metadata from TcpStream
-        self.stream = stream;
+        return Self{stream: stream, Router{route_map: HashMap::new()}};
          
-    }
-    fn get(path: Route, handler: HandlerFunc) {
-        todo!();
     }
     pub fn handle_client(self) -> Result<(), ClientError> {
         let mut owned_stream = self.stream;
