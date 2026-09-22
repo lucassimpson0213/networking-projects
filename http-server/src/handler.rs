@@ -19,17 +19,24 @@ use std::net::TcpStream;
 // \r\n                         // CRLF that marks the end of the headers
 
 
+
+//  we gotta dispatch behavior so you can register a function and then dispath it 
+pub struct Router{ 
+    route_map:  HashMap<String, HashMap<String, HandlerFunc>>        
+}
+
+
+impl Router {
+    pub fn new() -> {
+        
+    }
+}
+
+
 pub struct Handler<'conn> {
     stream: &'conn TcpStream,
     router: Router
 }
-
-//  we gotta dispatch behavior so you can register a function and then dispath it 
-pub struct Router{ 
-    route_map:  HashMap<String, HashMap<String, HandlerFunc>>
-    
-}
-
 
  impl <'conn> Handler <'conn>{
     pub fn new(stream:  &'conn TcpStream) -> Self {
