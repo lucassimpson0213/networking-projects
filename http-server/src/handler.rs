@@ -22,12 +22,23 @@ use std::net::TcpStream;
 
 //  we gotta dispatch behavior so you can register a function and then dispath it 
 pub struct Router{ 
-    route_map:  HashMap<String, HashMap<String, HandlerFunc>>        
+    route_map:  HashMap<String, HashMap<String, HandlerFunc>>,
+    response200: &'static str,
+    response404: &'static str,
+
 }
 
+enum ResponseType {
+    Ok(String),
+
+}
 
 impl Router {
-    pub fn new() -> {
+    pub fn new() -> Self {
+        Self{route_map: HashMap::new(), response200: "HTTP/1.1 200 OK\r\n\r\n", response404: "HTTP/1.1 200 OK\r\n\r\n"} 
+    }
+
+    pub fn route(route: String) {
         
     }
 }
@@ -35,13 +46,15 @@ impl Router {
 
 pub struct Handler<'conn> {
     stream: &'conn TcpStream,
-    router: Router
+    router: Router,
+
+
 }
 
  impl <'conn> Handler <'conn>{
     pub fn new(stream:  &'conn TcpStream) -> Self {
         //possibly provide some metadata from TcpStream
-        return Self{stream: stream, Router{route_map: HashMap::new()}};
+        return Self{stream: stream, router: Router::new()};
          
     }
     pub fn handle_client(self) -> Result<(), ClientError> {
@@ -63,7 +76,7 @@ pub struct Handler<'conn> {
         // it would be nice to match on a route pattern and then act on that and write a repsponse
         // from response writer
         
-        let responses: HashMap<String, HashMap<String, HandlerFunc>> = HashMap::new();
+       
 
 
 
