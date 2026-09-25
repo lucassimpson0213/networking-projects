@@ -28,10 +28,6 @@ pub struct Router{
 
 }
 
-enum ResponseType {
-    Ok(String),
-
-}
 
 impl Router {
     pub fn new() -> Self {
@@ -44,17 +40,21 @@ impl Router {
 }
 
 
-pub struct Handler<'conn> {
-    stream: &'conn TcpStream,
+pub struct Server <'conn> {
+    streams: Vec<&'conn TcpStream>,
     router: Router,
 
 
 }
-
- impl <'conn> Handler <'conn>{
+// this handler abstraction needs to not own the tcp stream, request handling and writing, we need a
+// server abstraction that recieves the tcp stream, and contacts, the router and creates requests
+// based on those tcp streams
+//
+//
+ impl <'conn> Server <'conn>{
     pub fn new(stream:  &'conn TcpStream) -> Self {
         //possibly provide some metadata from TcpStream
-        return Self{stream: stream, router: Router::new()};
+        return Self{streams: Vec::new(), router: Router::new()};
          
     }
     pub fn handle_client(self) -> Result<(), ClientError> {
