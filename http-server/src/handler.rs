@@ -1,9 +1,10 @@
-use std::collections::HashMap;
 use crate::errors::ClientError;
 use crate::request::parse_content_len_and_string;
 use crate::request::parse_request_target;
+use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
+use std::net::TcpListener;
 use std::net::TcpStream;
 
 // Request line
@@ -18,55 +19,67 @@ use std::net::TcpStream;
 // Accept: */*\r\n              // Header that specifies which media types the client can accept
 // \r\n                         // CRLF that marks the end of the headers
 
-
-
-//  we gotta dispatch behavior so you can register a function and then dispath it 
-pub struct Router{ 
-    route_map:  HashMap<String, HashMap<String, HandlerFunc>>,
+//  we gotta dispatch behavior so you can register a function and then dispath it
+pub struct Router {
+    route_map: HashMap<String, HashMap<String, HandlerFunc>>,
     response200: &'static str,
     response404: &'static str,
-
 }
-
 
 impl Router {
     pub fn new() -> Self {
-        Self{route_map: HashMap::new(), response200: "HTTP/1.1 200 OK\r\n\r\n", response404: "HTTP/1.1 200 OK\r\n\r\n"} 
+        Self {
+            route_map: HashMap::new(),
+            response200: "HTTP/1.1 200 OK\r\n\r\n",
+            response404: "HTTP/1.1 200 OK\r\n\r\n",
+        }
     }
 
-    pub fn route(route: String) {
-        
-    }
+    pub fn route(route: String) {}
 }
 
-
-pub struct Server <'conn> {
-    streams: Vec<&'conn TcpStream>,
+pub struct Server { 
     router: Router,
-
-
 }
 // this handler abstraction needs to not own the tcp stream, request handling and writing, we need a
 // server abstraction that recieves the tcp stream, and contacts, the router and creates requests
 // based on those tcp streams
 //
 //
- impl <'conn> Server <'conn>{
-    pub fn new(stream:  &'conn TcpStream) -> Self {
+impl Server {
+    pub fn new(stream: & TcpStream) -> Self {
         //possibly provide some metadata from TcpStream
-        return Self{streams: Vec::new(), router: Router::new()};
-         
+        return Self { 
+            router: Router::new(),
+        };
     }
-    pub fn handle_client(self) -> Result<(), ClientError> {
-        let mut owned_stream = self.stream;
+
+    fn start(&mut self, port: String) -> Result<(), std::io::Error> {
+        let listener = TcpListener::bind(port)?;
         
+        for stream in listener.incoming() {
+            let _ = self.handle_client(stream?);
+        }
+        Ok(())
+    }
+    pub fn handle_clientv2(&self, stream: TcpStream) -> Result<(), ClientError> {
+        let mut owned_stream = stream; 
+
+        let req = Request::new(&owned_stream);
         
+
+
+        let inquire = self.router.consult()
+    }
+    pub fn handle_client(&self, stream: TcpStream) -> Result<(), ClientError> {
+        let mut owned_stream = stream;
+
         let req = Request::new(&owned_stream)?;
         let request_target = req.request_target;
         let headers = req.headers;
         let (len, body) = (req.body_len, req.body);
-        
-        // let (len, header) = parse_headers(&buf); 
+
+        // let (len, header) = parse_headers(&buf);
         let response200 = "HTTP/1.1 200 OK\r\n\r\n";
         let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
         let response_echo = format!(
@@ -75,12 +88,6 @@ pub struct Server <'conn> {
         );
         // it would be nice to match on a route pattern and then act on that and write a repsponse
         // from response writer
-        
-       
-
-
-
-        
 
         if request_target == "/" {
             owned_stream.write_all(response200.as_bytes())?;
@@ -93,9 +100,6 @@ pub struct Server <'conn> {
 
         Ok(())
     }
-
-
-
 }
 
 // honestly method should be an enum with several different options
@@ -104,7 +108,7 @@ struct Request {
     method: String,
     request_target: String,
     body: String,
-    body_len: usize,  
+    body_len: usize,
     headers: String,
     buffer: String,
 }
@@ -120,29 +124,22 @@ impl Request {
         let request_target = parse_request_target(&buffer)?.clone();
         let (len, body) = parse_content_len_and_string(&buffer)?;
 
-        return Ok(Request { method: String::new(),body: body, body_len: len, request_target, headers: String::new(), buffer:buffer_as_utf8 })
+        return Ok(Request {
+            method: String::new(),
+            body: body,
+            body_len: len,
+            request_target,
+            headers: String::new(),
+            buffer: buffer_as_utf8,
+        });
     }
     // I think it makes a lot of sense to put these methods in here as they pertain to
     // information about the request
 
-    
-
-    pub fn headers() {
-
-    }
-
-
+    pub fn headers() {}
 }
-struct Response {
-    
-}
-
-
+struct Response {}
 
 type HandlerFunc = fn(&Request) -> Response;
 
-struct ResponseWriter {
-
-
-
-}
+struct ResponseWriter {}

@@ -11,7 +11,7 @@ use std::net::TcpListener;
 mod errors;
 mod handler;
 mod request;
-mod response;
+
 
 
 // Request line
@@ -41,16 +41,6 @@ fn main() {
 
 }
 
-fn bind_port() -> Result<(), std::io::Error> {
-    let listener = TcpListener::bind("127.0.0.1:4221")?;
-
-    for stream in listener.incoming() {
-        let stream_handler = handler::Handler::new()
-        let _ = handle_client(stream?, &listener);
-    }
-
-    Ok(())
-}
 
 #[cfg(test)]
 pub mod tests {
