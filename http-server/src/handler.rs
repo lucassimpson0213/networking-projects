@@ -21,7 +21,7 @@ use std::net::TcpStream;
 
 //  we gotta dispatch behavior so you can register a function and then dispath it
 pub struct Router {
-    route_map: HashMap<String, HashMap<String, HandlerFunc>>,
+    route_map: HashMap<String, HandlerFunc>,
     response200: &'static str,
     response404: &'static str,
 }
@@ -35,7 +35,28 @@ impl Router {
         }
     }
 
-    pub fn route(route: String) {}
+    pub fn register(&mut self, route: String, func: HandlerFunc) {
+       self.route_map.insert(route, func);
+    }
+
+    pub fn exec(&self, route: String, request: &Request)  -> Result<(), ClientError>{
+        let func = self.route_map.get(&route);
+
+        match func {
+            Some(function) => {
+                let ret = function(request);
+            }
+
+            None => {
+                
+            }
+        }
+
+        Ok(())
+
+
+
+    }
 }
 
 pub struct Server { 
@@ -65,11 +86,13 @@ impl Server {
     pub fn handle_clientv2(&self, stream: TcpStream) -> Result<(), ClientError> {
         let mut owned_stream = stream; 
 
-        let req = Request::new(&owned_stream);
+        let req = Request::new(&owned_stream)?;
         
 
 
-        let inquire = self.router.consult()
+        let inquire = self.router.consult(req.request_target);
+
+        Ok(())
     }
     pub fn handle_client(&self, stream: TcpStream) -> Result<(), ClientError> {
         let mut owned_stream = stream;
