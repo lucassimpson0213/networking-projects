@@ -39,16 +39,19 @@ impl Router {
        self.route_map.insert(route, func);
     }
 
-    pub fn exec(&self, route: String, request: &Request)  -> Result<(), ClientError>{
+    pub fn exec(&self, route: String, request: &Request)  -> Result<Response, ClientError>{
         let func = self.route_map.get(&route);
 
         match func {
             Some(function) => {
                 let ret = function(request);
+                // I'm assuming this returns a response because of the shape of it
+                //
+                return Ok(ret); 
             }
 
             None => {
-                
+                return Err();
             }
         }
 
