@@ -1,4 +1,5 @@
 use crate::errors::ClientError;
+use crate::errors::ClientError::NoRouteFunction;
 use crate::request::parse_content_len_and_string;
 use crate::request::parse_request_target;
 use std::collections::HashMap;
@@ -36,10 +37,10 @@ impl Router {
     }
 
     pub fn register(&mut self, route: String, func: HandlerFunc) {
-       self.route_map.insert(route, func);
+        self.route_map.insert(route, func);
     }
 
-    pub fn exec(&self, route: String, request: &Request)  -> Result<Response, ClientError>{
+    pub fn exec(&self, route: String, request: &Request) -> Result<Response, ClientError> {
         let func = self.route_map.get(&route);
 
         match func {
@@ -47,53 +48,52 @@ impl Router {
                 let ret = function(request);
                 // I'm assuming this returns a response because of the shape of it
                 //
-                return Ok(ret); 
+                return Ok(ret);
             }
 
             None => {
-                return Err();
+                return Err(NoRouteFunction);
             }
         }
-
-        Ok(())
-
-
-
     }
 }
 
-pub struct Server { 
+pub struct Server {
     router: Router,
 }
-// this handler abstraction needs to not own the tcp stream, request handling and writing, we need a
-// server abstraction that recieves the tcp stream, and contacts, the router and creates requests
-// based on those tcp streams
-//
-//
 impl Server {
-    pub fn new(stream: & TcpStream) -> Self {
+    pub fn new(stream: &TcpStream) -> Self {
         //possibly provide some metadata from TcpStream
-        return Self { 
+        return Self {
             router: Router::new(),
         };
     }
 
     fn start(&mut self, port: String) -> Result<(), std::io::Error> {
         let listener = TcpListener::bind(port)?;
-        
+
         for stream in listener.incoming() {
             let _ = self.handle_client(stream?);
         }
         Ok(())
     }
     pub fn handle_clientv2(&self, stream: TcpStream) -> Result<(), ClientError> {
-        let mut owned_stream = stream; 
+        let mut owned_stream = stream;
 
         let req = Request::new(&owned_stream)?;
+
+        let response = self.router.exec(req.request_target, &req);
         
 
+        match response?.response_code  {
+            Ok(field) => {
 
-        let inquire = self.router.consult(req.request_target);
+            }
+            Err(..) => {
+
+            }
+        }
+         
 
         Ok(())
     }
@@ -164,8 +164,16 @@ impl Request {
 
     pub fn headers() {}
 }
-struct Response {}
+struct Response {
+    response_string: &'static str,
+    response_code: ResponseCode,
+}
 
 type HandlerFunc = fn(&Request) -> Response;
+
+enum ResponseCode {
+    Ok,
+    NotFound,
+}
 
 struct ResponseWriter {}

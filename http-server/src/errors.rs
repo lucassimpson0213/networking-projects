@@ -28,6 +28,7 @@ impl From<std::str::Utf8Error> for ClientError {
 }
 #[derive(Debug)]
 pub enum ClientError {
+    NoRouteFunction , 
     TcpStreamRead(BufferError),
     Io,
     StringConversion,
