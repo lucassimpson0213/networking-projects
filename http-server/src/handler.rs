@@ -45,10 +45,10 @@ impl Router {
 
         match func {
             Some(function) => {
-                let ret = function(request);
+                let response:Response = function(request);
                 // I'm assuming this returns a response because of the shape of it
                 //
-                return Ok(ret);
+                return Ok(response);
             }
 
             None => {
@@ -86,11 +86,11 @@ impl Server {
         
 
         match response?.response_code  {
-            Ok(field) => {
-
+            ResponseCode::HttpOk => {
+              return  Ok(response?.response_string);
             }
-            Err(..) => {
-
+            ResponseCode::HttpNotFound => {
+                Err("There has been an error");
             }
         }
          
@@ -172,8 +172,8 @@ struct Response {
 type HandlerFunc = fn(&Request) -> Response;
 
 enum ResponseCode {
-    Ok,
-    NotFound,
+    HttpOk,
+    HttpNotFound,
 }
 
 struct ResponseWriter {}
