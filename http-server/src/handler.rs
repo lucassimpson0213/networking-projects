@@ -87,10 +87,10 @@ impl Server {
 
         match response?.response_code  {
             ResponseCode::HttpOk => {
-              return  Ok(response?.response_string);
+                stream.write_all(buf);
             }
             ResponseCode::HttpNotFound => {
-                Err("There has been an error");
+                stream.write_all(buf);
             }
         }
          
