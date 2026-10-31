@@ -83,14 +83,14 @@ impl Server {
         let req = Request::new(&owned_stream)?;
 
         let response = self.router.exec(req.request_target, &req);
-        
+        let response_write = response?.response_string;
 
         match response?.response_code  {
             ResponseCode::HttpOk => {
-                stream.write_all(buf);
+                stream.write_all(response_write);
             }
             ResponseCode::HttpNotFound => {
-                stream.write_all(buf);
+                stream.write_all(response_write);
             }
         }
          
