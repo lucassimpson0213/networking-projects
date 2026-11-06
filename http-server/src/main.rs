@@ -40,11 +40,16 @@ fn main() -> Result<(), std::io::Error>{
 
     let mut server = handler::Server::new();
     let mut port = String::new();
-    port.push_str("8080");
+    port.push_str("127.0.0.1:8081");
+    server.register_route("/".to_string(), func);
     let _started = handler::Server::start(&mut server, port)?;
    
     
     Ok(())
+}
+
+fn response_handler(request: &Request) -> Response {
+
 }
 
 
