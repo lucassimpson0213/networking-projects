@@ -77,10 +77,10 @@ impl Server {
         }
         Ok(())
     }
-    pub fn register_route(self) {
+    pub fn register_route(mut self, route: String, func: fn(&Request) -> Response) {
         self.router.register(route, func);
     }
-    pub fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
+    fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
         // let mut owned_stream = stream;
 
         let req = Request::new(&stream)?;
@@ -88,7 +88,7 @@ impl Server {
         let response = self.router.exec(&req.request_target, &req)?;
         let response_write = &response.response_string.as_bytes();
 
-        stream.write_all(response_write)    ;
+        stream.write_all(response_write);
         // match &response.response_code  {
         //     ResponseCode::HttpOk => {
         //         stream.write_all(response_write);
