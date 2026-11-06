@@ -5,9 +5,7 @@
 #![deny(clippy::unimplemented)]
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
-use crate::handler::Handler;
 use core::str::Utf8Error;
-use std::net::TcpListener;
 mod errors;
 mod handler;
 mod request;
@@ -39,14 +37,16 @@ fn main() -> Result<(), std::io::Error>{
     // app.get("/user-agent")
     // let _ = bind_port();
     //
-    let server = handler::Server::new();
+
+    let mut server = handler::Server::new();
     let mut port = String::new();
     port.push_str("8080");
-    let started = handler::Server::start(&mut server, port)?;
+    let _started = handler::Server::start(&mut server, port)?;
    
     
     Ok(())
 }
+
 
 enum ServerError {
     FailedToStart
@@ -55,9 +55,9 @@ enum ServerError {
 
 #[cfg(test)]
 pub mod tests {
-    use crate::errors::ClientError;
+    
     use crate::request::parse_content_len_and_string;
-    use crate::request::parse_request_target;
+ 
 
     pub struct TestingBuf {
         request_line: &'static str,
