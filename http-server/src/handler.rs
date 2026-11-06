@@ -62,7 +62,7 @@ pub struct Server {
     router: Router,
 }
 impl Server {
-    pub fn new(stream: &TcpStream) -> Self {
+    pub fn new() -> Self {
         //possibly provide some metadata from TcpStream
         return Self {
             router: Router::new(),

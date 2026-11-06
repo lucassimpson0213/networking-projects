@@ -28,7 +28,7 @@ mod request;
 
 // Request body (empty)
 //TODO make a test script using curl localhost:4221/abcsad
-fn main() {
+fn main() -> Result<(), std::io::Error>{
     //println!("hello");
 
     // let _ = bind_port();
@@ -39,11 +39,17 @@ fn main() {
     // app.get("/user-agent")
     // let _ = bind_port();
     //
-    let server = handler::Server{};
-    handler::Server::start()
+    let server = handler::Server::new();
+    let mut port = String::new();
+    port.push_str("8080");
+    let started = handler::Server::start(&mut server, port)?;
    
     
+    Ok(())
+}
 
+enum ServerError {
+    FailedToStart
 }
 
 
