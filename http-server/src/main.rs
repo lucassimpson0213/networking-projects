@@ -5,9 +5,7 @@
 #![deny(clippy::unimplemented)]
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
-use crate::handler::Handler;
 use core::str::Utf8Error;
-use std::net::TcpListener;
 mod errors;
 mod handler;
 mod request;
@@ -28,7 +26,7 @@ mod request;
 
 // Request body (empty)
 //TODO make a test script using curl localhost:4221/abcsad
-fn main() {
+fn main() -> Result<(), std::io::Error>{
     //println!("hello");
 
     // let _ = bind_port();
@@ -39,19 +37,27 @@ fn main() {
     // app.get("/user-agent")
     // let _ = bind_port();
     //
-    let server = handler::Server{};
-    handler::Server::start()
+
+    let mut server = handler::Server::new();
+    let mut port = String::new();
+    port.push_str("8080");
+    let _started = handler::Server::start(&mut server, port)?;
    
     
+    Ok(())
+}
 
+
+enum ServerError {
+    FailedToStart
 }
 
 
 #[cfg(test)]
 pub mod tests {
-    use crate::errors::ClientError;
+    
     use crate::request::parse_content_len_and_string;
-    use crate::request::parse_request_target;
+ 
 
     pub struct TestingBuf {
         request_line: &'static str,
