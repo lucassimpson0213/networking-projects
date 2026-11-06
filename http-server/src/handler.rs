@@ -28,7 +28,7 @@ pub struct Router {
 }
 
 impl Router {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             route_map: HashMap::new(),
             response200: "HTTP/1.1 200 OK\r\n\r\n",
@@ -36,12 +36,12 @@ impl Router {
         }
     }
 
-    pub fn register(&mut self, route: String, func: HandlerFunc) {
+    fn register(&mut self, route: String, func: HandlerFunc) {
         self.route_map.insert(route, func);
     }
 
-    pub fn exec(&self, route: String, request: &Request) -> Result<Response, ClientError> {
-        let func = self.route_map.get(&route);
+    fn exec(&self, route: &String, request: &Request) -> Result<Response, ClientError> {
+        let func = self.route_map.get(route);
 
         match func {
             Some(function) => {
@@ -69,30 +69,34 @@ impl Server {
         };
     }
 
-    fn start(&mut self, port: String) -> Result<(), std::io::Error> {
+    pub fn start(&mut self, port: String) -> Result<(), std::io::Error> {
         let listener = TcpListener::bind(port)?;
 
         for stream in listener.incoming() {
-            let _ = self.handle_client(stream?);
+            let _ = self.handle_clientv2(stream?);
         }
         Ok(())
     }
-    pub fn handle_clientv2(&self, stream: TcpStream) -> Result<(), ClientError> {
-        let mut owned_stream = stream;
+    pub fn register_route(mut self, route: String, func: fn(&Request) -> Response) {
+        self.router.register(route, func);
+    }
+    fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
+        // let mut owned_stream = stream;
 
-        let req = Request::new(&owned_stream)?;
+        let req = Request::new(&stream)?;
 
-        let response = self.router.exec(req.request_target, &req);
-        
+        let response = self.router.exec(&req.request_target, &req)?;
+        let response_write = &response.response_string.as_bytes();
 
-        match response?.response_code  {
-            ResponseCode::HttpOk => {
-                stream.write_all(buf);
-            }
-            ResponseCode::HttpNotFound => {
-                stream.write_all(buf);
-            }
-        }
+        stream.write_all(response_write);
+        // match &response.response_code  {
+        //     ResponseCode::HttpOk => {
+        //         stream.write_all(response_write);
+        //     }
+        //     ResponseCode::HttpNotFound => {
+        //         stream.write_all(response_write);
+        //     }
+        // }
          
 
         Ok(())
