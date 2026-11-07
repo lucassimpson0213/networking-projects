@@ -142,6 +142,10 @@ pub mod server {
 // headers could also be modeled a little differently
 //
 mod http {
+    use crate::errors::ClientError;
+    use crate::request::parse_content_len_and_string;
+    use std::net::TcpStream;
+
     pub struct Request {
         method: String,
         request_target: String,
