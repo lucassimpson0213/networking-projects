@@ -7,6 +7,8 @@ use std::io::Read;
 use std::io::Write;
 use std::net::TcpListener;
 use std::net::TcpStream;
+use connection_lifecycle::Response;
+
 
 // Request line
 // GET                          // HTTP method
@@ -21,163 +23,173 @@ use std::net::TcpStream;
 // \r\n                         // CRLF that marks the end of the headers
 
 //  we gotta dispatch behavior so you can register a function and then dispath it
-pub struct Router {
-    route_map: HashMap<String, HandlerFunc>,
-    response200: &'static str,
-    response404: &'static str,
-}
 
-impl Router {
-    fn new() -> Self {
-        Self {
-            route_map: HashMap::new(),
-            response200: "HTTP/1.1 200 OK\r\n\r\n",
-            response404: "HTTP/1.1 200 OK\r\n\r\n",
-        }
+pub mod server {
+    pub struct Router {
+        route_map: HashMap<String, HandlerFunc>,
+        response200: &'static str,
+        response404: &'static str,
     }
 
-    fn register(&mut self, route: String, func: HandlerFunc) {
-        self.route_map.insert(route, func);
-    }
-
-    fn exec(&self, route: &String, request: &Request) -> Result<Response, ClientError> {
-        let func = self.route_map.get(route);
-
-        match func {
-            Some(function) => {
-                let response:Response = function(request);
-                // I'm assuming this returns a response because of the shape of it
-                //
-                return Ok(response);
-            }
-
-            None => {
-                return Err(NoRouteFunction);
+    impl Router {
+        fn new() -> Self {
+            Self {
+                route_map: HashMap::new(),
+                response200: "HTTP/1.1 200 OK\r\n\r\n",
+                response404: "HTTP/1.1 200 OK\r\n\r\n",
             }
         }
-    }
-}
 
-pub struct Server {
-    router: Router,
-}
-impl Server {
-    pub fn new() -> Self {
-        //possibly provide some metadata from TcpStream
-        return Self {
-            router: Router::new(),
-        };
-    }
-
-    pub fn start(&mut self, port: String) -> Result<(), std::io::Error> {
-        let listener = TcpListener::bind(port)?;
-
-        for stream in listener.incoming() {
-            let _ = self.handle_clientv2(stream?);
+        fn register(&mut self, route: String, func: HandlerFunc) {
+            self.route_map.insert(route, func);
         }
-        Ok(())
+
+        fn exec(&self, route: &String, request: &Request) -> Result<Response, ClientError> {
+            let func = self.route_map.get(route);
+
+            match func {
+                Some(function) => {
+                    let response:Response = function(request);
+                    // I'm assuming this returns a response because of the shape of it
+                    //
+                    return Ok(response);
+                }
+
+                None => {
+                    return Err(NoRouteFunction);
+                }
+            }
+        }
     }
-    pub fn register_route(mut self, route: String, func: fn(&Request) -> Response) {
-        self.router.register(route, func);
+
+    pub struct Server {
+        router: Router,
     }
-    fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
-        // let mut owned_stream = stream;
+    impl Server {
+        pub fn new() -> Self {
+            //possibly provide some metadata from TcpStream
+            return Self {
+                router: Router::new(),
+            };
+        }
 
-        let req = Request::new(&stream)?;
+        pub fn start(&mut self, port: String) -> Result<(), std::io::Error> {
+            let listener = TcpListener::bind(port)?;
 
-        let response = self.router.exec(&req.request_target, &req)?;
-        let response_write = &response.response_string.as_bytes();
+            for stream in listener.incoming() {
+                let _ = self.handle_clientv2(stream?);
+            }
+            Ok(())
+        }
+        pub fn register_route(mut self, route: String, func: fn(&Request) -> Response) {
+            self.router.register(route, func);
+        }
+        fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
+            // let mut owned_stream = stream;
 
-        stream.write_all(response_write);
-        // match &response.response_code  {
-        //     ResponseCode::HttpOk => {
-        //         stream.write_all(response_write);
+            let req = Request::new(&stream)?;
+
+            let response = self.router.exec(&req.request_target, &req)?;
+            let response_write = &response.response_string.as_bytes();
+
+            stream.write_all(response_write);
+            // match &response.response_code  {
+            //     ResponseCode::HttpOk => {
+            //         stream.write_all(response_write);
+            //     }
+            //     ResponseCode::HttpNotFound => {
+            //         stream.write_all(response_write);
+            //     }
+            // }
+
+
+            Ok(())
+        }
+        // pub fn handle_client(&self, stream: TcpStream) -> Result<(), ClientError> {
+        //     let mut owned_stream = stream;
+        //
+        //     let req = Request::new(&owned_stream)?;
+        //     let request_target = req.request_target;
+        //     let headers = req.headers;
+        //     let (len, body) = (req.body_len, req.body);
+        //
+        //     // let (len, header) = parse_headers(&buf);
+        //     let response200 = "HTTP/1.1 200 OK\r\n\r\n";
+        //     let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
+        //     let response_echo = format!(
+        //         "HTTP/1.1 200 Ok\r\nContent-Type: text/plain\r\nContent-Length: {:?}\r\n\r{:?}",
+        //         len, body
+        //     );
+        //     // it would be nice to match on a route pattern and then act on that and write a repsponse
+        //     // from response writer
+        //
+        //     if request_target == "/" {
+        //         owned_stream.write_all(response200.as_bytes())?;
+        //     } else if request_target.starts_with("/echo/") {
+        //         let _response = owned_stream.write_all(&response_echo.into_bytes());
+        //     } else if request_target.starts_with("/user-agent") {
+        //     } else {
+        //         owned_stream.write_all(response404.as_bytes())?;
         //     }
-        //     ResponseCode::HttpNotFound => {
-        //         stream.write_all(response_write);
-        //     }
+        //
+        //     Ok(())
         // }
-         
-
-        Ok(())
     }
-    pub fn handle_client(&self, stream: TcpStream) -> Result<(), ClientError> {
-        let mut owned_stream = stream;
 
-        let req = Request::new(&owned_stream)?;
-        let request_target = req.request_target;
-        let headers = req.headers;
-        let (len, body) = (req.body_len, req.body);
-
-        // let (len, header) = parse_headers(&buf);
-        let response200 = "HTTP/1.1 200 OK\r\n\r\n";
-        let response404 = "HTTP/1.1 404 Not Found\r\n\r\n";
-        let response_echo = format!(
-            "HTTP/1.1 200 Ok\r\nContent-Type: text/plain\r\nContent-Length: {:?}\r\n\r{:?}",
-            len, body
-        );
-        // it would be nice to match on a route pattern and then act on that and write a repsponse
-        // from response writer
-
-        if request_target == "/" {
-            owned_stream.write_all(response200.as_bytes())?;
-        } else if request_target.starts_with("/echo/") {
-            let _response = owned_stream.write_all(&response_echo.into_bytes());
-        } else if request_target.starts_with("/user-agent") {
-        } else {
-            owned_stream.write_all(response404.as_bytes())?;
-        }
-
-        Ok(())
-    }
 }
 
 // honestly method should be an enum with several different options
 // headers could also be modeled a little differently
-struct Request {
-    method: String,
-    request_target: String,
-    body: String,
-    body_len: usize,
-    headers: String,
-    buffer: String,
-}
-
-impl Request {
-    pub fn new(stream: &TcpStream) -> Result<Request, ClientError> {
-        let mut owned_stream = stream;
-        let mut buffer = Vec::new();
-
-        let _amtbytes = owned_stream.read_to_end(&mut buffer);
-        let buffer_as_utf8 = String::from_utf8(buffer.clone())?;
-        // possibly move parse request target to request object
-        let request_target = parse_request_target(&buffer)?.clone();
-        let (len, body) = parse_content_len_and_string(&buffer)?;
-
-        return Ok(Request {
-            method: String::new(),
-            body: body,
-            body_len: len,
-            request_target,
-            headers: String::new(),
-            buffer: buffer_as_utf8,
-        });
+//
+mod http {
+    pub struct Request {
+        method: String,
+        request_target: String,
+        body: String,
+        body_len: usize,
+        headers: String,
+        buffer: String,
     }
-    // I think it makes a lot of sense to put these methods in here as they pertain to
-    // information about the request
 
-    pub fn headers() {}
+    impl Request {
+        pub fn new(stream: &TcpStream) -> Result<Request, ClientError> {
+            let mut owned_stream = stream;
+            let mut buffer = Vec::new();
+
+            let _amtbytes = owned_stream.read_to_end(&mut buffer);
+            let buffer_as_utf8 = String::from_utf8(buffer.clone())?;
+            // possibly move parse request target to request object
+            let request_target = parse_request_target(&buffer)?.clone();
+            let (len, body) = parse_content_len_and_string(&buffer)?;
+
+            return Ok(Request {
+                method: String::new(),
+                body: body,
+                body_len: len,
+                request_target,
+                headers: String::new(),
+                buffer: buffer_as_utf8,
+            });
+        }
+        // I think it makes a lot of sense to put these methods in here as they pertain to
+        // information about the request
+
+        pub fn headers() {}
+    }
+    pub struct Response {
+        response_string: &'static str,
+        response_code: ResponseCode,
+    }
+
+
+
+    pub type HandlerFunc = fn(&Request) -> Response;
+
+    enum ResponseCode {
+        HttpOk,
+        HttpNotFound,
+    }
+
+    struct ResponseWriter {}
+
 }
-struct Response {
-    response_string: &'static str,
-    response_code: ResponseCode,
-}
-
-type HandlerFunc = fn(&Request) -> Response;
-
-enum ResponseCode {
-    HttpOk,
-    HttpNotFound,
-}
-
-struct ResponseWriter {}

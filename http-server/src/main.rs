@@ -6,6 +6,8 @@
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
 use core::str::Utf8Error;
+
+use crate::handler::Response;
 mod errors;
 mod handler;
 mod request;
@@ -41,7 +43,7 @@ fn main() -> Result<(), std::io::Error>{
     let mut server = handler::Server::new();
     let mut port = String::new();
     port.push_str("127.0.0.1:8081");
-    server.register_route("/".to_string(), func);
+    server.register_route("/".to_string(), response_handler);
     let _started = handler::Server::start(&mut server, port)?;
    
     
@@ -49,7 +51,7 @@ fn main() -> Result<(), std::io::Error>{
 }
 
 fn response_handler(request: &Request) -> Response {
-
+    return Response:
 }
 
 
