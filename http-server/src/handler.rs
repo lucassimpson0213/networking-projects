@@ -1,13 +1,4 @@
-use crate::errors::ClientError;
-use crate::errors::ClientError::NoRouteFunction;
-use crate::request::parse_content_len_and_string;
-use crate::request::parse_request_target;
-use std::collections::HashMap;
-use std::io::Read;
-use std::io::Write;
-use std::net::TcpListener;
-use std::net::TcpStream;
-use connection_lifecycle::Response;
+
 
 
 // Request line
@@ -25,6 +16,12 @@ use connection_lifecycle::Response;
 //  we gotta dispatch behavior so you can register a function and then dispath it
 
 pub mod server {
+    use std::net::{TcpStream, TcpListener};
+    use crate::errors::{ClientErr};
+    use crate::handler::http::{Request, Response, HandlerFunc};
+    use std::collections::HashMap;
+    use std::io::Write;
+    
     pub struct Router {
         route_map: HashMap<String, HandlerFunc>,
         response200: &'static str,
@@ -143,6 +140,7 @@ pub mod server {
 //
 mod http {
     use crate::errors::ClientError;
+    use std::io::Read;
     use crate::request::parse_content_len_and_string;
     use std::net::TcpStream;
 
