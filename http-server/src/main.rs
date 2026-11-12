@@ -7,7 +7,7 @@
 #![deny(unsafe_code)]
 use core::str::Utf8Error;
 
-use crate::handler::{http::Response, server::Server};
+use crate::handler::{http::Response, server::Server, http::Request};
 mod errors;
 mod handler;
 mod request;
@@ -51,7 +51,9 @@ fn main() -> Result<(), std::io::Error>{
 }
 
 fn response_handler(request: &Request) -> Response {
-    todo!()
+    todo!();
+
+    // return Response { response_string: (), response_code: () }
 }
 
 
