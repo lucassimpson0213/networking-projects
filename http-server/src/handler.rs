@@ -17,7 +17,8 @@
 
 pub mod server {
     use std::net::{TcpStream, TcpListener};
-    use crate::errors::{ClientErr};
+    use crate::errors::{ClientError};
+    use crate::errors::ClientError::NoRouteFunction;
     use crate::handler::http::{Request, Response, HandlerFunc};
     use std::collections::HashMap;
     use std::io::Write;
@@ -138,15 +139,15 @@ pub mod server {
 // honestly method should be an enum with several different options
 // headers could also be modeled a little differently
 //
-mod http {
+pub mod http {
     use crate::errors::ClientError;
     use std::io::Read;
-    use crate::request::parse_content_len_and_string;
+    use crate::request::{parse_content_len_and_string, parse_request_target};
     use std::net::TcpStream;
 
     pub struct Request {
-        method: String,
-        request_target: String,
+        pub method: String,
+        pub request_target: String,
         body: String,
         body_len: usize,
         headers: String,
@@ -179,8 +180,8 @@ mod http {
         pub fn headers() {}
     }
     pub struct Response {
-        response_string: &'static str,
-        response_code: ResponseCode,
+        pub response_string: &'static str,
+        pub response_code: ResponseCode,
     }
 
 
