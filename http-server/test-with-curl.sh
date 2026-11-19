@@ -3,7 +3,7 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 makecurl() {
-   echo $1
+   echo "$1"
    curl -v "$1" 2>&1 | gum style --foreground $2
 }
 
@@ -13,13 +13,14 @@ main() {
      lsof -t -i :4221 | xargs kill -9
      cargo build
      #start server
-     cargo run &
+     cargo run >> server.log 2>&1 &
+     tail -f server.log &
      # this should return 404 not found error
      sleep 5s
-     makecurl http://localhost:4221/abcdefg 2
+     makecurl http://localhost:4221/abcdefg
      #this should return 200 ok
      sleep 5s
-     makecurl http://localhost:4221  1
+     makecurl http://localhost:4221
 
      wait
 

@@ -1,0 +1,376 @@
+warning: unused variable: `request`
+  --> src/main.rs:53:21
+   |
+53 | fn response_handler(request: &Request) -> Response {
+   |                     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_request`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: enum `ServerError` is never used
+  --> src/main.rs:59:6
+   |
+59 | enum ServerError {
+   |      ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `TooManyBytesRead` is never constructed
+ --> src/errors.rs:6:5
+  |
+5 | pub enum BufferError {
+  |          ----------- variant in this enum
+6 |     TooManyBytesRead,
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `BufferError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: variants `TcpStreamRead` and `UnsupportedRequest` are never constructed
+  --> src/errors.rs:32:5
+   |
+30 | pub enum ClientError {
+   |          ----------- variants in this enum
+31 |     NoRouteFunction , 
+32 |     TcpStreamRead(BufferError),
+   |     ^^^^^^^^^^^^^
+...
+36 |     UnsupportedRequest,
+   |     ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ClientError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `response200` and `response404` are never read
+  --> src/handler.rs:30:9
+   |
+28 |     pub struct Router {
+   |                ------ fields in this struct
+29 |         route_map: HashMap<String, HandlerFunc>,
+30 |         response200: &'static str,
+   |         ^^^^^^^^^^^
+31 |         response404: &'static str,
+   |         ^^^^^^^^^^^
+   |
+   = note: `Router` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `method`, `body`, `body_len`, `headers`, and `buffer` are never read
+   --> src/handler.rs:151:13
+    |
+150 |     pub struct Request {
+    |                ------- fields in this struct
+151 |         pub method: String,
+    |             ^^^^^^
+152 |         pub request_target: String,
+153 |         body: String,
+    |         ^^^^
+154 |         body_len: usize,
+    |         ^^^^^^^^
+155 |         headers: String,
+    |         ^^^^^^^
+156 |         buffer: String,
+    |         ^^^^^^
+
+warning: associated function `headers` is never used
+   --> src/handler.rs:182:16
+    |
+159 |     impl Request {
+    |     ------------ associated function in this implementation
+...
+182 |         pub fn headers() {}
+    |                ^^^^^^^
+
+warning: field `response_code` is never read
+   --> src/handler.rs:186:13
+    |
+184 |     pub struct Response {
+    |                -------- field in this struct
+185 |         pub response_string: &'static str,
+186 |         pub response_code: ResponseCode,
+    |             ^^^^^^^^^^^^^
+
+warning: variant `HttpNotFound` is never constructed
+   --> src/handler.rs:201:9
+    |
+199 |     pub enum ResponseCode {
+    |              ------------ variant in this enum
+200 |         HttpOk,
+201 |         HttpNotFound,
+    |         ^^^^^^^^^^^^
+
+warning: struct `ResponseWriter` is never constructed
+   --> src/handler.rs:204:12
+    |
+204 |     struct ResponseWriter {}
+    |            ^^^^^^^^^^^^^^
+
+warning: function `parse_headers` is never used
+ --> src/request.rs:5:8
+  |
+5 | pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
+  |        ^^^^^^^^^^^^^
+
+warning: unused `Result` that must be used
+  --> src/handler.rs:95:13
+   |
+95 |             stream.write_all(response_write);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+95 |             let _ = stream.write_all(response_write);
+   |             +++++++
+
+warning: `http-server` (bin "http-server") generated 12 warnings (run `cargo fix --bin "http-server" -p http-server` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/http-server`
+warning: unused variable: `request`
+  --> src/main.rs:53:21
+   |
+53 | fn response_handler(request: &Request) -> Response {
+   |                     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_request`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: enum `ServerError` is never used
+  --> src/main.rs:59:6
+   |
+59 | enum ServerError {
+   |      ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `TooManyBytesRead` is never constructed
+ --> src/errors.rs:6:5
+  |
+5 | pub enum BufferError {
+  |          ----------- variant in this enum
+6 |     TooManyBytesRead,
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `BufferError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: variants `TcpStreamRead` and `UnsupportedRequest` are never constructed
+  --> src/errors.rs:32:5
+   |
+30 | pub enum ClientError {
+   |          ----------- variants in this enum
+31 |     NoRouteFunction , 
+32 |     TcpStreamRead(BufferError),
+   |     ^^^^^^^^^^^^^
+...
+36 |     UnsupportedRequest,
+   |     ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ClientError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `response200` and `response404` are never read
+  --> src/handler.rs:30:9
+   |
+28 |     pub struct Router {
+   |                ------ fields in this struct
+29 |         route_map: HashMap<String, HandlerFunc>,
+30 |         response200: &'static str,
+   |         ^^^^^^^^^^^
+31 |         response404: &'static str,
+   |         ^^^^^^^^^^^
+   |
+   = note: `Router` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `method`, `body`, `body_len`, `headers`, and `buffer` are never read
+   --> src/handler.rs:151:13
+    |
+150 |     pub struct Request {
+    |                ------- fields in this struct
+151 |         pub method: String,
+    |             ^^^^^^
+152 |         pub request_target: String,
+153 |         body: String,
+    |         ^^^^
+154 |         body_len: usize,
+    |         ^^^^^^^^
+155 |         headers: String,
+    |         ^^^^^^^
+156 |         buffer: String,
+    |         ^^^^^^
+
+warning: associated function `headers` is never used
+   --> src/handler.rs:182:16
+    |
+159 |     impl Request {
+    |     ------------ associated function in this implementation
+...
+182 |         pub fn headers() {}
+    |                ^^^^^^^
+
+warning: field `response_code` is never read
+   --> src/handler.rs:186:13
+    |
+184 |     pub struct Response {
+    |                -------- field in this struct
+185 |         pub response_string: &'static str,
+186 |         pub response_code: ResponseCode,
+    |             ^^^^^^^^^^^^^
+
+warning: variant `HttpNotFound` is never constructed
+   --> src/handler.rs:201:9
+    |
+199 |     pub enum ResponseCode {
+    |              ------------ variant in this enum
+200 |         HttpOk,
+201 |         HttpNotFound,
+    |         ^^^^^^^^^^^^
+
+warning: struct `ResponseWriter` is never constructed
+   --> src/handler.rs:204:12
+    |
+204 |     struct ResponseWriter {}
+    |            ^^^^^^^^^^^^^^
+
+warning: function `parse_headers` is never used
+ --> src/request.rs:5:8
+  |
+5 | pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
+  |        ^^^^^^^^^^^^^
+
+warning: unused `Result` that must be used
+  --> src/handler.rs:95:13
+   |
+95 |             stream.write_all(response_write);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+95 |             let _ = stream.write_all(response_write);
+   |             +++++++
+
+warning: `http-server` (bin "http-server") generated 12 warnings (run `cargo fix --bin "http-server" -p http-server` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/http-server`
+warning: unused variable: `request`
+  --> src/main.rs:53:21
+   |
+53 | fn response_handler(request: &Request) -> Response {
+   |                     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_request`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: enum `ServerError` is never used
+  --> src/main.rs:59:6
+   |
+59 | enum ServerError {
+   |      ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `TooManyBytesRead` is never constructed
+ --> src/errors.rs:6:5
+  |
+5 | pub enum BufferError {
+  |          ----------- variant in this enum
+6 |     TooManyBytesRead,
+  |     ^^^^^^^^^^^^^^^^
+  |
+  = note: `BufferError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: variants `TcpStreamRead` and `UnsupportedRequest` are never constructed
+  --> src/errors.rs:32:5
+   |
+30 | pub enum ClientError {
+   |          ----------- variants in this enum
+31 |     NoRouteFunction , 
+32 |     TcpStreamRead(BufferError),
+   |     ^^^^^^^^^^^^^
+...
+36 |     UnsupportedRequest,
+   |     ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ClientError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `response200` and `response404` are never read
+  --> src/handler.rs:30:9
+   |
+28 |     pub struct Router {
+   |                ------ fields in this struct
+29 |         route_map: HashMap<String, HandlerFunc>,
+30 |         response200: &'static str,
+   |         ^^^^^^^^^^^
+31 |         response404: &'static str,
+   |         ^^^^^^^^^^^
+   |
+   = note: `Router` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `method`, `body`, `body_len`, `headers`, and `buffer` are never read
+   --> src/handler.rs:151:13
+    |
+150 |     pub struct Request {
+    |                ------- fields in this struct
+151 |         pub method: String,
+    |             ^^^^^^
+152 |         pub request_target: String,
+153 |         body: String,
+    |         ^^^^
+154 |         body_len: usize,
+    |         ^^^^^^^^
+155 |         headers: String,
+    |         ^^^^^^^
+156 |         buffer: String,
+    |         ^^^^^^
+
+warning: associated function `headers` is never used
+   --> src/handler.rs:182:16
+    |
+159 |     impl Request {
+    |     ------------ associated function in this implementation
+...
+182 |         pub fn headers() {}
+    |                ^^^^^^^
+
+warning: field `response_code` is never read
+   --> src/handler.rs:186:13
+    |
+184 |     pub struct Response {
+    |                -------- field in this struct
+185 |         pub response_string: &'static str,
+186 |         pub response_code: ResponseCode,
+    |             ^^^^^^^^^^^^^
+
+warning: variant `HttpNotFound` is never constructed
+   --> src/handler.rs:201:9
+    |
+199 |     pub enum ResponseCode {
+    |              ------------ variant in this enum
+200 |         HttpOk,
+201 |         HttpNotFound,
+    |         ^^^^^^^^^^^^
+
+warning: struct `ResponseWriter` is never constructed
+   --> src/handler.rs:204:12
+    |
+204 |     struct ResponseWriter {}
+    |            ^^^^^^^^^^^^^^
+
+warning: function `parse_headers` is never used
+ --> src/request.rs:5:8
+  |
+5 | pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
+  |        ^^^^^^^^^^^^^
+
+warning: unused `Result` that must be used
+  --> src/handler.rs:95:13
+   |
+95 |             stream.write_all(response_write);
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+95 |             let _ = stream.write_all(response_write);
+   |             +++++++
+
+warning: `http-server` (bin "http-server") generated 12 warnings (run `cargo fix --bin "http-server" -p http-server` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/http-server`
+12
