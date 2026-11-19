@@ -43,7 +43,11 @@ fn main() -> Result<(), std::io::Error>{
     let server = Server::new();
     let mut port = String::new();
     port.push_str("127.0.0.1:4221");
-    server.clone().register_route("/".to_string(), response_handler);
+    let cloned_server = server.clone();
+
+    &cloned_server.register_route("/".to_string(), response_handler);
+
+
     let _started = Server::start(& mut server.clone(), port)?;
    
     

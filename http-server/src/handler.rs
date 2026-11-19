@@ -51,7 +51,6 @@ pub mod server {
                 Some(function) => {
                     let response:Response = function(request);
                     // I'm assuming this returns a response because of the shape of it
-                    //
                     return Ok(response);
                 }
 
@@ -75,8 +74,10 @@ pub mod server {
 
         pub fn start(&mut self, port: String) -> Result<(), std::io::Error> {
             let listener = TcpListener::bind(port)?;
-
+            println!("Server has been started on port 4221");
             for stream in listener.incoming() {
+                println!("Processing stream");
+                println!("stream: {:?}",stream );
                 let _ = self.handle_clientv2(stream?);
             }
             Ok(())
@@ -87,12 +88,14 @@ pub mod server {
         fn handle_clientv2(&self, mut stream: TcpStream) -> Result<(), ClientError> {
             // let mut owned_stream = stream;
 
+            println!("Connection established");
             let req = Request::new(&stream)?;
 
             let response = self.router.exec(&req.request_target, &req)?;
             let response_write = &response.response_string.as_bytes();
 
-            stream.write_all(response_write);
+            println!("Handling client");
+            stream.write(response_write)?;
             // match &response.response_code  {
             //     ResponseCode::HttpOk => {
             //         stream.write_all(response_write);
