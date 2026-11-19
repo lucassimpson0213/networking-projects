@@ -10,6 +10,7 @@ makecurl() {
 #https://github.com/bats-core/bats-core
 main() {
      #make sure binary is built
+     lsof -t -i :4221 | xargs kill -9
      cargo build
      #start server
      cargo run &
@@ -19,6 +20,8 @@ main() {
      #this should return 200 ok
      sleep 5s
      makecurl http://localhost:4221  1
+
+     wait
 
 }
 

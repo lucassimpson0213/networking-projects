@@ -42,7 +42,7 @@ fn main() -> Result<(), std::io::Error>{
 
     let server = Server::new();
     let mut port = String::new();
-    port.push_str("127.0.0.1:8081");
+    port.push_str("127.0.0.1:4221");
     server.clone().register_route("/".to_string(), response_handler);
     let _started = Server::start(& mut server.clone(), port)?;
    
@@ -52,7 +52,7 @@ fn main() -> Result<(), std::io::Error>{
 
 fn response_handler(request: &Request) -> Response {
     
-    return Response::new("", ResponseCode::HttpOk) 
+    return Response::new("HTTP/1.1 200 OK\r\n\r\n", ResponseCode::HttpOk) 
 }
 
 
