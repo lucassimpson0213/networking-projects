@@ -7,7 +7,7 @@
 #![deny(unsafe_code)]
 use core::str::Utf8Error;
 
-use crate::handler::{http::Response, server::Server, http::Request};
+use crate::handler::{http::Response, server::Server, http::Request, http::ResponseCode};
 mod errors;
 mod handler;
 mod request;
@@ -40,20 +40,19 @@ fn main() -> Result<(), std::io::Error>{
     // let _ = bind_port();
     //
 
-    let mut server = Server::new();
+    let server = Server::new();
     let mut port = String::new();
     port.push_str("127.0.0.1:8081");
-    server.register_route("/".to_string(), response_handler);
-    let _started = Server::start(&mut server, port)?;
+    server.clone().register_route("/".to_string(), response_handler);
+    let _started = Server::start(& mut server.clone(), port)?;
    
     
     Ok(())
 }
 
 fn response_handler(request: &Request) -> Response {
-    todo!();
-
-    // return Response { response_string: (), response_code: () }
+    
+    return Response::new("", ResponseCode::HttpOk) 
 }
 
 
@@ -67,20 +66,21 @@ pub mod tests {
     
     use crate::request::parse_content_len_and_string;
  
+ 
 
     pub struct TestingBuf {
         request_line: &'static str,
     }
 
     #[test]
-    pub fn return_request_line() -> Result<(), std::str::Utf8Error> {
+    pub fn return_request_line() -> Result<(), crate::errors::ClientError> {
         let test_struct = crate::tests::TestingBuf {
             request_line: "GET /index.html HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n",
         };
 
-        // let target = parse_request_target(test_struct.request_line.as_bytes())?;
+        let target = crate::request::parse_request_target(test_struct.request_line.as_bytes())?;
 
-        // assert_eq!(std::str::from_utf8(&target), Ok("/index.html"));
+        assert_eq!(target.as_str(), "/index.html");
 
         Ok(())
     }

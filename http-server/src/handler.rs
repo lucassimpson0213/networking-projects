@@ -23,6 +23,8 @@ pub mod server {
     use std::collections::HashMap;
     use std::io::Write;
     
+
+    #[derive(Debug, Clone)]
     pub struct Router {
         route_map: HashMap<String, HandlerFunc>,
         response200: &'static str,
@@ -59,7 +61,7 @@ pub mod server {
             }
         }
     }
-
+    #[derive(Clone)]
     pub struct Server {
         router: Router,
     }
@@ -184,11 +186,17 @@ pub mod http {
         pub response_code: ResponseCode,
     }
 
+    impl Response {
+        pub fn new(response_str: &'static str, response_code: ResponseCode) -> Response {
+            return Response{response_string: response_str, response_code: response_code }  
+        }
+    }
+
 
 
     pub type HandlerFunc = fn(&Request) -> Response;
 
-    enum ResponseCode {
+    pub enum ResponseCode {
         HttpOk,
         HttpNotFound,
     }
