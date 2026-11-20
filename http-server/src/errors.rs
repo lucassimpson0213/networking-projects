@@ -1,5 +1,7 @@
 use crate::Utf8Error;
 use std::string::FromUtf8Error;
+use tracing::{self, subscriber::SetGlobalDefaultError};
+
 
 #[derive(Debug)]
 pub enum BufferError {
@@ -26,6 +28,26 @@ impl From<std::str::Utf8Error> for ClientError {
         ClientError::StringConversion
     }
 }
+
+#[derive(Debug)]
+pub enum AppError {
+    ClientError(ClientError),
+    TracingSetupError(SetGlobalDefaultError),
+    IoError(std::io::Error)
+}
+
+impl From<std::io::Error> for AppError {
+    fn from(error: std::io::Error) -> AppError {
+       AppError::IoError(error)
+    }
+}
+
+impl From<SetGlobalDefaultError> for AppError {
+    fn from(error: SetGlobalDefaultError) -> AppError {
+        AppError::TracingSetupError(error)
+    }
+}
+
 #[derive(Debug)]
 pub enum ClientError {
     NoRouteFunction , 

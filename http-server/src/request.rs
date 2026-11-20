@@ -1,7 +1,5 @@
 use crate::errors::ClientError;
 use crate::errors::RequestLineError;
-use std::string::FromUtf8Error;
-use std::str::Utf8Error;
 
 
 pub fn parse_headers(request_line: &[u8]) -> (usize, &str) {
@@ -26,7 +24,7 @@ pub fn parse_request_target(buf: &[u8]) -> Result<String, ClientError> {
         }
     }
     let str: String =  String::from_utf8(request_line)?;
-    Ok(&str)
+    Ok(str)
 }
 
 pub fn parse_content_len_and_string(target: &[u8]) -> Result<(usize, String), ClientError> {

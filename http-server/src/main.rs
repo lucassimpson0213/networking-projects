@@ -6,6 +6,9 @@
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
 use core::str::Utf8Error;
+use tracing::{self, subscriber::SetGlobalDefaultError};
+use tracing_subscriber;
+use crate::{errors::ClientError, handler::{http::{Request, Response, ResponseCode}, server::Server}};
 mod errors;
 mod handler;
 mod request;
@@ -26,7 +29,27 @@ mod request;
 
 // Request body (empty)
 //TODO make a test script using curl localhost:4221/abcsad
-fn main() -> Result<(), std::io::Error>{
+//
+fn main() -> Result<(), crate::errors::AppError>{
+
+    let subscriber = tracing_subscriber::fmt()
+        // Use a more compact, abbreviated log format
+        .pretty()
+        // Display source code file paths
+        .with_file(true)
+        // Display source code line numbers
+        .with_line_number(true)
+        // Display the thread ID an event was recorded on
+        .with_thread_ids(true)
+        // Don't display the event's target (module path)
+        .with_target(false)
+        // Build the subscriber
+        .finish();
+
+
+    // use that subscriber to process traces emitted after this point
+    tracing::subscriber::set_global_default(subscriber)?;
+
     //println!("hello");
 
     // let _ = bind_port();
@@ -38,13 +61,23 @@ fn main() -> Result<(), std::io::Error>{
     // let _ = bind_port();
     //
 
-    let mut server = handler::Server::new();
+    let server = Server::new();
     let mut port = String::new();
-    port.push_str("8080");
-    let _started = handler::Server::start(&mut server, port)?;
+    port.push_str("127.0.0.1:4221");
+    let cloned_server = server.clone();
+
+    let _ = &cloned_server.register_route("/".to_string(), response_handler);
+
+
+    let _started = Server::start(& mut server.clone(), port)?;
    
     
     Ok(())
+}
+
+fn response_handler(request: &Request) -> Response {
+    
+    return Response::new("HTTP/1.1 200 OK\r\n\r\n", ResponseCode::HttpOk) 
 }
 
 
@@ -58,20 +91,21 @@ pub mod tests {
     
     use crate::request::parse_content_len_and_string;
  
+ 
 
     pub struct TestingBuf {
         request_line: &'static str,
     }
 
     #[test]
-    pub fn return_request_line() -> Result<(), std::str::Utf8Error> {
+    pub fn return_request_line() -> Result<(), crate::errors::ClientError> {
         let test_struct = crate::tests::TestingBuf {
             request_line: "GET /index.html HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n",
         };
 
-        // let target = parse_request_target(test_struct.request_line.as_bytes())?;
+        let target = crate::request::parse_request_target(test_struct.request_line.as_bytes())?;
 
-        // assert_eq!(std::str::from_utf8(&target), Ok("/index.html"));
+        assert_eq!(target.as_str(), "/index.html");
 
         Ok(())
     }
