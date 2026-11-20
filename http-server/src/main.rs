@@ -6,8 +6,9 @@
 #![deny(clippy::dbg_macro)]
 #![deny(unsafe_code)]
 use core::str::Utf8Error;
-
-use crate::handler::{http::Response, server::Server, http::Request, http::ResponseCode};
+use tracing::{self, subscriber::SetGlobalDefaultError};
+use tracing_subscriber;
+use crate::{errors::ClientError, handler::{http::{Request, Response, ResponseCode}, server::Server}};
 mod errors;
 mod handler;
 mod request;
@@ -28,7 +29,25 @@ mod request;
 
 // Request body (empty)
 //TODO make a test script using curl localhost:4221/abcsad
-fn main() -> Result<(), std::io::Error>{
+//
+fn main() -> Result<(), crate::errors::AppError>{
+    let subscriber = tracing_subscriber::FmtSubscriber::new();
+    // use that subscriber to process traces emitted after this point
+    tracing::subscriber::set_global_default(subscriber)?;
+
+    let subscriber = tracing_subscriber::fmt()
+    // Use a more compact, abbreviated log format
+    .pretty()
+    // Display source code file paths
+    .with_file(true)
+    // Display source code line numbers
+    .with_line_number(true)
+    // Display the thread ID an event was recorded on
+    .with_thread_ids(true)
+    // Don't display the event's target (module path)
+    .with_target(false)
+    // Build the subscriber
+    .finish();
     //println!("hello");
 
     // let _ = bind_port();
@@ -45,7 +64,7 @@ fn main() -> Result<(), std::io::Error>{
     port.push_str("127.0.0.1:4221");
     let cloned_server = server.clone();
 
-    &cloned_server.register_route("/".to_string(), response_handler);
+    let _ = &cloned_server.register_route("/".to_string(), response_handler);
 
 
     let _started = Server::start(& mut server.clone(), port)?;
